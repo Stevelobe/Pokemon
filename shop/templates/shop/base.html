@@ -1,0 +1,306 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>PokéStore - Buy Japanese Pokémon Cards</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'shop/css/style.css' %}">
+
+  <style>
+    /* General */
+    body { margin: 0; font-family: 'Segoe UI', sans-serif; }
+    img { width: 100%; height: auto; object-fit: cover; }
+    .card-img-top { height: 250px; object-fit: cover; }
+    @media (max-width: 576px) { .card-img-top { height: 180px; } }
+
+    /* Hero section for home only */
+    .site-hero {
+        background-image: url("{% static 'shop/images/hero.jpg' %}");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        min-height: 320px;
+        position: relative;
+    }
+    .site-hero::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.35));
+    }
+    .site-hero-content { position: relative; z-index: 2; }
+
+  
+
+    /* Buttons */
+    .btn-hover { transition: transform 0.2s, box-shadow 0.2s; }
+    .btn-hover:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+
+    /* Pokémon Chatbot */
+    #pokemon-chatbot { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; align-items: flex-end; }
+    #pokeball-btn {
+        width: 60px; height: 60px; border-radius: 50%;
+        background: radial-gradient(circle at 50% 50%, white 50%, red 50%);
+        border: 3px solid black; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        display: flex; align-items: center; justify-content: center; transition: transform 0.2s;
+    }
+    #pokeball-btn:hover { transform: scale(1.1); }
+    #chat-window {
+        width: 320px; max-width: 90%; background: white;
+        border: 2px solid #d32f2f; border-radius: 10px;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.3); display: none; flex-direction: column; overflow: hidden; margin-bottom: 10px;
+    }
+    #chat-header { background: #d32f2f; color: white; padding: 10px; font-weight: bold; text-align: center; }
+    #chat-messages { flex: 1; max-height: 300px; overflow-y: auto; padding: 10px; font-size: 14px; }
+    #chat-input-container { display: flex; border-top: 1px solid #d32f2f; }
+    #chat-input { flex: 1; border: none; padding: 8px; font-size: 14px; }
+    #chat-send-btn { background: #d32f2f; color: white; border: none; padding: 0 15px; cursor: pointer; transition: background 0.2s; }
+    #chat-send-btn:hover { background: #b71c1c; }
+    #chat-messages div { margin: 5px 0; padding: 5px 8px; border-radius: 6px; }
+    #chat-messages div.user { background: #ffe066; text-align: right; }
+    #chat-messages div.bot { background: #fcd34d; color: #d32f2f; }
+    /* ===== PRODUCT CARD HOVER EFFECT ===== */
+.featured-card {
+    border-radius: 14px;
+    overflow: hidden;
+    transition: 
+        transform 0.35s ease,
+        box-shadow 0.35s ease;
+    background: #fff;
+}
+
+/* Card lift + glow */
+.featured-card:hover {
+    transform: translateY(-8px) scale(1.03);
+    box-shadow: 
+        0 18px 40px rgba(0, 0, 0, 0.18),
+        0 0 0 2px rgba(220, 53, 69, 0.08);
+}
+
+/* Image zoom on hover */
+.featured-card img {
+    transition: transform 0.45s ease;
+}
+
+.featured-card:hover img {
+    transform: scale(1.12);
+}
+
+/* Smooth content separation */
+.featured-card .card-body {
+    position: relative;
+    z-index: 2;
+    background: #fff;
+}
+
+/* Button pop effect */
+.featured-card .btn {
+    transition: all 0.25s ease;
+}
+
+.featured-card:hover .btn {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(220, 53, 69, 0.35);
+}
+
+/* Preorder badge styling */
+.preorder-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 0.7rem;
+    padding: 6px 10px;
+    border-radius: 50px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+/* Mobile safety (no aggressive zoom) */
+@media (max-width: 768px) {
+    .featured-card:hover {
+        transform: translateY(-4px) scale(1.01);
+    }
+
+    .featured-card:hover img {
+        transform: scale(1.05);
+    }
+}
+
+  </style>
+</head>
+<body class="d-flex flex-column min-vh-100 {% block body_class %}{% endblock %}">
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-danger">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="{% url 'home' %}">PokéStore</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navMain">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" href="{% url 'product_list' %}">Shop</a></li>
+          {% if categories %}
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Categories</a>
+            <ul class="dropdown-menu">
+              {% for c in categories %}
+                <li><a class="dropdown-item" href="{{ c.get_absolute_url }}">{{ c.name }}</a></li>
+              {% endfor %}
+            </ul>
+          </li>
+          {% endif %}
+        </ul>
+
+        <form class="d-flex" method="get" action="{% url 'product_list' %}">
+          <input class="form-control me-2" type="search" placeholder="Search cards..." name="q" value="{{ query|default:'' }}">
+          <button class="btn btn-light">Search</button>
+        </form>
+
+        <ul class="navbar-nav ms-3">
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'cart_detail' %}">
+              Cart ({{ request.session.cart|length|default:0 }})
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  {% block hero %}{% endblock %}
+
+  <!-- Main content -->
+  <main class="flex-fill container py-4">
+    {% block content %}
+    <div class="text-center mt-5">
+    <h2>Payment Successful! 🎉</h2>
+    <p>Your Bitcoin payment was received. Thank you for shopping at PokéStore!</p>
+    <a href="{% url 'product_list' %}" class="btn btn-danger mt-3">Continue Shopping</a>
+</div>{% endblock %}
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-dark text-white mt-5 py-3 mt-auto">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6">
+          <h5>PokéStore</h5>
+          <p class="mb-0">Japanese Pokémon cards — booster boxes, singles, and preorders.</p>
+        </div>
+        <div class="col-md-6 text-md-end">
+          <small>&copy; 2025 PokéStore.</small>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Pokémon Chatbot -->
+  <div id="pokemon-chatbot">
+    <div id="pokeball-btn"></div>
+    <div id="chat-window">
+      <div id="chat-header">PokéBot 🧢</div>
+      <div id="chat-messages"></div>
+      <div id="chat-input-container">
+        <input id="chat-input" placeholder="Ask me about cards, preorders...">
+        <button id="chat-send-btn">Send</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const pokeball = document.getElementById('pokeball-btn');
+    const chatWindow = document.getElementById('chat-window');
+    const chatMessages = document.getElementById('chat-messages');
+    const chatInput = document.getElementById('chat-input');
+    const chatSend = document.getElementById('chat-send-btn');
+
+    const cartCount = parseInt("{{ request.session.cart|length|default:'0' }}");
+    const isBuyer = cartCount > 0;
+
+    pokeball.onclick = () => {
+      chatWindow.style.display = chatWindow.style.display === 'flex' ? 'none' : 'flex';
+    };
+
+    function getPokestoreReply(text) {
+      const t = text.toLowerCase();
+      const visitorKeywords = ['hello','hi','browse','look','what','booster','explore'];
+      const buyerKeywords = ['price','cost','cart','booster','checkout','buy','shipping','preorder','how to buy','authentic','fake'];
+
+      if(t.includes('out of stock') || t.includes('unavailable')) return "That card has fled the battlefield for now 😅 Check back soon or explore similar products!";
+      if(t.includes('preorder')) return "This item is a pre-order 🕒 It will be shipped as soon as it’s officially released. You’ll be among the first Trainers to receive it!";
+      if(t.includes('shipping') || t.includes('delivery')) return "Delivery time depends on your location 🌍 Once shipped, tracking will help you follow your package like a Pokédex!";
+      if(t.includes('authentic') || t.includes('fake')) return "All cards sold on PokéStore are 100% authentic Japanese Pokémon products 🧢 No fakes, no replicas.";
+      if(t.includes('how to buy') || t.includes('checkout') || t.includes('cart')) return "Easy as catching a Pikachu ⚡ Add the item to your cart, open the cart page, and follow the checkout steps.";
+      if(visitorKeywords.some(k => t.includes(k)) && !isBuyer) return "Welcome, Trainer! 🧢 Looking around for Japanese Pokémon cards? I can help you explore booster boxes, singles, or upcoming releases!";
+      if(buyerKeywords.some(k => t.includes(k)) || isBuyer) return isBuyer ? 
+          "Great choice, Trainer! 🔥 That booster box is sealed and ready for battle. Once you add it to your cart, you can checkout securely." :
+          "Hello Trainer! 🧢 Ask me about products, preorders, prices, or shipping.";
+      return "That’s a bit outside my Pokédex 📖 but I can help you with anything related to PokéStore!";
+    }
+
+    function sendMessage() {
+      if(chatInput.value.trim()==='') return;
+      const userText = chatInput.value;
+      chatMessages.innerHTML += `<div class="user"><strong>You:</strong> ${userText}</div>`;
+      const botText = getPokestoreReply(userText);
+      chatMessages.innerHTML += `<div class="bot"><strong>PokéBot:</strong> ${botText}</div>`;
+      chatInput.value='';
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    chatSend.onclick = sendMessage;
+    chatInput.addEventListener('keypress', e => { if(e.key==='Enter') sendMessage(); });
+  </script>
+  <script>
+  // Flash promo countdown (24 hours)
+  const endTime = new Date().getTime() + (24 * 60 * 60 * 1000);
+
+  function updateCountdown() {
+    const now = new Date().getTime();
+    const diff = endTime - now;
+
+    if (diff <= 0) {
+      document.getElementById("countdown").innerHTML = "EXPIRED";
+      return;
+    }
+
+    const h = Math.floor(diff / (1000 * 60 * 60));
+    const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const s = Math.floor((diff % (1000 * 60)) / 1000);
+
+    document.getElementById("countdown").innerHTML =
+      `${h}h ${m}m ${s}s`;
+  }
+
+  setInterval(updateCountdown, 1000);
+  updateCountdown();
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const items = document.querySelectorAll("[data-animate]");
+
+    const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add("show");
+            }
+        });
+    }, { threshold: 0.15 });
+
+    items.forEach(item => observer.observe(item));
+});
+</script>
+
+
+</body>
+</html>

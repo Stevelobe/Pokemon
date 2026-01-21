@@ -1,0 +1,30 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container my-4">
+    <h3 class="mb-4">Checkout</h3>
+    <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label class="form-label">Full name</label>
+            <input type="text" name="full_name" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input type="email" name="email" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Address</label>
+            <textarea class="form-control" name="address" rows="3" required></textarea>
+        </div>
+        <div class="mb-3">
+            <h5>Order total: <strong>${{ cart.get_total_price }}</strong></h5>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-primary" type="submit">Place Order</button>
+            <a href="{% url 'bitcoin_payment' %}" class="btn btn-warning">Pay with Bitcoin</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

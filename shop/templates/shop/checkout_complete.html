@@ -1,0 +1,9 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+{% block content %}
+<div class="text-center mt-5">
+  <h3>Thank you for your order!</h3>
+  <p>Your order has been received. We will contact you soon with the details.</p>
+  <a class="btn btn-primary mt-3" href="{% url 'product_list' %}">Continue shopping</a>
+</div>
+{% endblock %}

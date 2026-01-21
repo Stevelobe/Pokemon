@@ -1,0 +1,358 @@
+{% extends "shop/base.html" %}
+{% load static %}
+
+{% block body_class %}home-page{% endblock %}
+
+{% block content %}
+
+<style>
+/* ===================== */
+/* MOVING BODY BACKGROUND */
+/* ===================== */
+body.home-page {
+    background-image: url("{% static 'shop/images/body.jpg' %}");
+    background-repeat: repeat-x;
+    background-size: cover;
+    animation: bodyMove 90s linear infinite;
+}
+@keyframes bodyMove {
+    from { background-position: 0 0; }
+    to { background-position: -4000px 0; }
+}
+
+/* BODY OVERLAY FOR READABILITY */
+.page-overlay {
+    background: rgba(255, 255, 255, 0.95);
+}
+
+/* ===================== */
+/* ANIMATED LIMITED-TIME DEAL STRIP */
+/* ===================== */
+.deal-strip {
+    background: #ff3b3b;
+    color: #fff;
+    font-weight: bold;
+    padding: 8px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    position: relative;
+}
+.deal-strip span {
+    display: inline-block;
+    padding-left: 100%;
+    animation: slideLeft 15s linear infinite;
+}
+@keyframes slideLeft {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-100%); }
+}
+
+/* ===================== */
+/* TRUST METRICS */
+/* ===================== */
+.trust-metrics {
+    display: flex;
+    justify-content: space-around;
+    text-align: center;
+    background: #f8f9fa;
+    padding: 40px 0;
+}
+.trust-metrics div h3 {
+    margin: 0;
+    font-size: 1.8rem;
+    color: #ff3b3b;
+}
+
+/* ===================== */
+/* MYSTERY BOX SECTION WITH FLOATING POKEBALLS */
+/* ===================== */
+.mystery-box {
+    background: url("{% static 'shop/images/mystery-bg.jpg' %}") center/cover no-repeat;
+    padding: 100px 20px;
+    text-align: center;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+    border-radius: 20px;
+}
+.mystery-box h2 {
+    font-size: 3rem;
+    font-weight: 900;
+    margin-bottom: 20px;
+    animation: glowText 2s infinite alternate;
+}
+.mystery-box p {
+    font-size: 1.5rem;
+    margin-bottom: 30px;
+    font-weight: 600;
+}
+.mystery-box .btn {
+    font-size: 1.5rem;
+    padding: 15px 40px;
+    font-weight: bold;
+    animation: pulse 1.5s infinite;
+    box-shadow: 0 0 20px rgba(255, 59, 59, 0.6);
+    border-radius: 50px;
+    position: relative;
+    z-index: 2;
+}
+
+/* Glow animation for text */
+@keyframes glowText {
+    from { text-shadow: 0 0 10px #fff, 0 0 20px #ff3b3b, 0 0 30px #ff3b3b; }
+    to { text-shadow: 0 0 20px #fff, 0 0 30px #ffb347, 0 0 40px #ffb347; }
+}
+
+/* Pulse animation for button */
+@keyframes pulse {
+    0% { transform: scale(1); box-shadow: 0 0 10px rgba(255,59,59,0.4); }
+    50% { transform: scale(1.05); box-shadow: 0 0 25px rgba(255,59,59,0.8); }
+    100% { transform: scale(1); box-shadow: 0 0 10px rgba(255,59,59,0.4); }
+}
+
+/* Floating Pokéballs */
+.pokeball {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    background: url("{% static 'shop/images/pokeball.png' %}") no-repeat center/contain;
+    animation: floatUpDown 4s ease-in-out infinite alternate;
+    opacity: 0.7;
+}
+@keyframes floatUpDown {
+    0% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(15deg); }
+    100% { transform: translateY(0) rotate(0deg); }
+}
+
+/* ===================== */
+/* REAL PACK GALLERY */
+/* ===================== */
+.pack-gallery {
+    padding: 60px 0;
+    text-align: center;
+}
+.pack-gallery h3 { margin-bottom: 40px; font-weight: bold; }
+.pack-gallery img {
+    width: 120px;
+    margin: 10px;
+    border-radius: 8px;
+    transition: transform 0.3s;
+}
+.pack-gallery img:hover { transform: scale(1.1); }
+
+/* ===================== */
+/* GUARANTEE BADGES */
+/* ===================== */
+.guarantees {
+    background: #fff3e0;
+    padding: 50px 20px;
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    text-align: center;
+}
+.guarantees div {
+    margin: 10px;
+    flex: 1 1 150px;
+}
+.guarantees div h5 { margin-top: 10px; font-weight: bold; color: #ff3b3b; }
+
+/* ===================== */
+/* POKEMON FOOTER */
+/* ===================== */
+.pokemon-footer {
+    position: relative;
+    overflow: hidden;
+    height: 280px;
+    background-image: url("{% static 'shop/images/wall.jpg' %}");
+    background-repeat: repeat-x;
+    background-size: cover;
+    animation: moveBg 40s linear infinite;
+}
+@keyframes moveBg { from { background-position: 0 0; } to { background-position: -2000px 0; } }
+.pokemon-footer-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.85), rgba(0,0,0,0.4));
+}
+.pokemon-footer-content { position: relative; z-index: 2; color: #fff; }
+</style>
+
+<div class="page-overlay">
+
+<!-- HERO -->
+<section class="site-hero d-flex align-items-center justify-content-center text-center text-white">
+    <div class="site-hero-content" data-animate>
+        <span class="badge bg-danger mb-2 px-3 py-2">
+            ⚡ FLASH PROMO — Ends in <span id="countdown"></span>
+        </span>
+        <h1 class="display-5 fw-bold mt-3">Japanese Pokémon Cards — Official & Sealed</h1>
+        <p class="lead">Booster Boxes • Singles • Preorders • Worldwide Shipping</p>
+        <div class="d-flex justify-content-center gap-3 mt-3">
+            <a href="{% url 'product_list' %}" class="btn btn-light btn-lg px-4">Shop Now</a>
+            <a href="{% url 'product_list' %}?preorder=1" class="btn btn-outline-light btn-lg px-4">Pre-Orders</a>
+        </div>
+    </div>
+</section>
+
+<!-- LIMITED-TIME DEAL STRIP -->
+<div class="deal-strip">
+    <span>⏰ Only 24 hours left — Free shipping on orders over $50! 🔥 Grab your booster boxes now! ⚡</span>
+</div>
+
+<!-- TRUST METRICS -->
+<section class="trust-metrics">
+    <div>
+        <h3>38+</h3>
+        <p>Countries Served</p>
+    </div>
+    <div>
+        <h3>12,000+</h3>
+        <p>Orders Shipped</p>
+    </div>
+    <div>
+        <h3>4.9/5</h3>
+        <p>Average Trainer Rating</p>
+    </div>
+</section>
+
+<!-- FEATURED PRODUCTS -->
+<section class="mt-5 container">
+    <h3 class="fw-bold mb-4 text-center" data-animate>🔥 Featured Releases</h3>
+    <div class="row g-4">
+        {% for p in featured %}
+        <div class="col-6 col-sm-4 col-md-3 col-lg-2" data-animate>
+            <div class="card h-100">
+                <img src="{{ p.image.url }}" class="card-img-top">
+                <div class="card-body text-center p-2">
+                    <h6 class="fw-bold small">{{ p.name|truncatechars:25 }}</h6>
+                    <p class="fw-bold text-danger">${{ p.price }}</p>
+                    <a href="{{ p.get_absolute_url }}" class="btn btn-danger btn-sm w-100">View</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- MYSTERY BOX SECTION -->
+<section class="mystery-box">
+    <!-- Floating Pokéballs -->
+    <div class="pokeball" style="top:20%; left:10%; animation-delay: 0s;"></div>
+    <div class="pokeball" style="top:40%; left:80%; animation-delay: 1s;"></div>
+    <div class="pokeball" style="top:70%; left:30%; animation-delay: 2s;"></div>
+
+    <h2>🎁 Pokémon Mystery Box</h2>
+    <p>Get Rare Cards Guaranteed — Add Excitement to Your Collection!</p>
+    <a href="{% url 'product_list' %}?mystery=1" class="btn btn-danger btn-lg">Open Your Box</a>
+</section>
+
+<!-- REAL PACK GALLERY -->
+<section class="pack-gallery">
+    <h3>📸 Real Pulls from Real Trainers</h3>
+    {% for img in gallery_images %}
+        <img src="{{ img.url }}" alt="Pack Pull">
+    {% endfor %}
+</section>
+
+<!-- GUARANTEE BADGES -->
+<section class="guarantees">
+    <div>
+        <img src="{% static 'shop/images/auth.png' %}" width="50">
+        <h5>100% Authentic</h5>
+    </div>
+    <div>
+        <img src="{% static 'shop/images/ship.png' %}" width="50">
+        <h5>Insured Shipping</h5>
+    </div>
+    <div>
+        <img src="{% static 'shop/images/ref.png' %}" width="50">
+        <h5>Easy Refunds</h5>
+    </div>
+    <div>
+        <img src="{% static 'shop/images/sec.png' %}" width="50">
+        <h5>Secure Payments</h5>
+    </div>
+</section>
+
+<!-- SERVICES -->
+<section class="mt-5 py-5 bg-light">
+    <div class="container">
+        <h3 class="fw-bold text-center mb-5" data-animate>Why Trainers Choose Us</h3>
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3" data-animate>
+                <div class="service-card text-center p-4 h-100">
+                    <img src="{% static 'shop/images/car.png' %}" width="50" class="mb-3">
+                    <h5 class="fw-bold">Fast Shipping</h5>
+                    <p class="small">Safe packaging, mint condition delivery worldwide.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3" data-animate>
+                <div class="service-card text-center p-4 h-100">
+                    <img src="{% static 'shop/images/poks.png' %}" width="50" class="mb-3">
+                    <h5 class="fw-bold">Authentic Cards</h5>
+                    <p class="small">100% original Pokémon cards.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3" data-animate>
+                <div class="service-card text-center p-4 h-100">
+                    <img src="{% static 'shop/images/deal.png' %}" width="50" class="mb-3">
+                    <h5 class="fw-bold">Best Deals</h5>
+                    <p class="small">Competitive pricing.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3" data-animate>
+                <div class="service-card text-center p-4 h-100">
+                    <img src="{% static 'shop/images/sup.png' %}" width="50" class="mb-3">
+                    <h5 class="fw-bold">Support</h5>
+                    <p class="small">Friendly trainer support.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CONTACT -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="card p-4 mx-auto" style="max-width:600px">
+            <h3 class="fw-bold text-center mb-4">Contact Us</h3>
+            <form method="post">
+                {% csrf_token %}
+                <input class="form-control mb-3" placeholder="Name">
+                <input class="form-control mb-3" placeholder="Email">
+                <textarea class="form-control mb-3" rows="4" placeholder="Message"></textarea>
+                <button class="btn btn-danger w-100">Send</button>
+            </form>
+        </div>
+    </div>
+</section>
+
+</div>
+
+<!-- MOVING FOOTER -->
+<section class="pokemon-footer">
+    <div class="pokemon-footer-overlay"></div>
+    <div class="container h-100 d-flex align-items-center justify-content-center">
+        <div class="pokemon-footer-content text-center">
+            <h2 class="fw-bold">Catch Them All ⚡</h2>
+            <p class="lead">Authentic Japanese Pokémon Cards</p>
+            <a href="{% url 'product_list' %}" class="btn btn-danger btn-lg">Start Collecting</a>
+        </div>
+    </div>
+</section>
+
+{% block extra_js %}
+<script>
+const countdownDate = new Date();
+countdownDate.setHours(countdownDate.getHours() + 24);
+setInterval(() => {
+    const d = countdownDate - new Date();
+    document.getElementById("countdown").innerHTML =
+        Math.floor(d/36e5)+"h "+Math.floor(d%36e5/6e4)+"m "+Math.floor(d%6e4/1e3)+"s";
+},1000);
+</script>
+{% endblock %}
+
+{% endblock %}
