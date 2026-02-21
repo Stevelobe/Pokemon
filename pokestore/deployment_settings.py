@@ -36,7 +36,8 @@ STORAGES = {
         "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
     },
 }
-
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 # DATABASES = {
 #     "default": dj_database_url.config(
 #         default = os.environ['DATABASE_URL'],
