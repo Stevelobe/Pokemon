@@ -10,10 +10,17 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     'localhost',
     '1fcdf0a34164.ngrok-free.app',
+    'pokemon-h96m.onrender.com',
+    'shibuyatcghouse.com',
+    'www.shibuyatcghouse.com'
+
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     'https://*.ngrok-free.app',
+    'https://pokemon-h96m.onrender.com',
+    'https://shibuyatcghouse.com',
+    'https://www.shibuyatcghouse.com'
 ]
 
 NOWPAYMENTS_API_KEY = "DX6374Z-KK6MYXM-N7JMTVZ-MSZXQWG"
