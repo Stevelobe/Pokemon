@@ -118,3 +118,7 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # Default primary key field type
 # -------------------------------
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+USE_X_FORWARDED_HOST = True
